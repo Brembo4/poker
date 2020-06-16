@@ -155,222 +155,359 @@ void setMarkersFalse(std::vector<Player> &playerList, const int &currentBetter)
     playerList.at(currentBetter).setMatchStatus(true);
 }
 
-//break it up
+//helper functions which provide appropriate betting choices based on choice of last player
+char lastChoiceWasBet(std::vector<Player> &playerList, const int &currentBetter, int &amt)
+{
+  char choice;
+  std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << ", will you call (c), raise (r), or fold (f)?" << std::endl;
+  if (playerList.at(currentBetter).getFirstBet() < amt)
+    std::cout << "bet required is: $" << amt << " ( + $" << amt - playerList.at(currentBetter).getFirstBet() << " needed to call) - ($" << playerList.at(currentBetter).getMoney() << " held)" << std::endl;
+  else
+    std::cout << "bet required is: $" << amt << " - ($" << playerList.at(currentBetter).getMoney() << " held)" << std::endl;
+  if (playerList.at(currentBetter).getMoney() == 0)
+  {
+    std::cout << "forced check" << std::endl;
+    choice = 'x';
+  }
+  else
+    std::cin >> choice;
+  if (choice == 'r')
+  {
+    while (playerList.at(currentBetter).getMoney() <= amt && choice == 'r')
+    {
+      std::cout << "you dont have the funds required to raise, either call (c) or fold (f)" << std::endl;
+      std::cin >> choice;
+    }
+  }
+  return choice;
+}
+char lastChoiceWasCheck(std::vector<Player> &playerList, const int &currentBetter, int &amt)
+{
+  char choice;
+  std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << ", will you bet (b), or check (x)?" << std::endl;
+  if (playerList.at(currentBetter).getFirstBet() < amt)
+    std::cout << "bet required is: $" << amt << " ( + $" << amt - playerList.at(currentBetter).getFirstBet() << " needed to call) - ($" << playerList.at(currentBetter).getMoney() << " held)" << std::endl;
+  else
+    std::cout << "bet required is: $" << amt << " - ($" << playerList.at(currentBetter).getMoney() << " held)" << std::endl;
+  if (playerList.at(currentBetter).getMoney() == 0)
+  {
+    std::cout << "forced check" << std::endl;
+    choice = 'x';
+  }
+  else
+    std::cin >> choice;
+  return choice;
+}
+char lastChoiceWasCall(std::vector<Player> &playerList, const int &currentBetter, int &amt)
+{
+  char choice;
+  std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << ", will you call (c), raise (r), or fold (f)?" << std::endl;
+  if (playerList.at(currentBetter).getFirstBet() < amt)
+    std::cout << "bet required is: $" << amt << " ( + $" << amt - playerList.at(currentBetter).getFirstBet() << " needed to call) - ($" << playerList.at(currentBetter).getMoney() << " held)" << std::endl;
+  else
+    std::cout << "bet required is: $" << amt << " - ($" << playerList.at(currentBetter).getMoney() << " held)" << std::endl;
+  if (playerList.at(currentBetter).getMoney() == 0)
+  {
+    std::cout << "forced check" << std::endl;
+    choice = 'x';
+  }
+  else
+    std::cin >> choice;
+  if (choice == 'r')
+  {
+    while (playerList.at(currentBetter).getMoney() < amt && choice == 'r')
+    {
+      std::cout << "you dont have the funds required to raise, either call (c) or fold (f)" << std::endl;
+      std::cin >> choice;
+    }
+  }
+  return choice;
+}
+char lastChoiceWasRaise(std::vector<Player> &playerList, const int &currentBetter, int &amt)
+{
+  char choice;
+  std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << ", will you call (c), raise (r), or fold (f)?" << std::endl;
+  if (playerList.at(currentBetter).getFirstBet() < amt)
+    std::cout << "bet required is: $" << amt << " ( + $" << amt - playerList.at(currentBetter).getFirstBet() << " needed to call) - ($" << playerList.at(currentBetter).getMoney() << " held)" << std::endl;
+  else
+    std::cout << "bet required is: $" << amt << " - ($" << playerList.at(currentBetter).getMoney() << " held)" << std::endl;
+  if (playerList.at(currentBetter).getMoney() == 0)
+  {
+    std::cout << "forced check" << std::endl;
+    choice = 'x';
+  }
+  else
+    std::cin >> choice;
+  if (choice == 'r')
+  {
+    while (playerList.at(currentBetter).getMoney() < amt && choice == 'r')
+    {
+      std::cout << "you dont have the funds required to raise, either call (c) or fold (f)" << std::endl;
+      std::cin >> choice;
+    }
+  }
+  return choice;
+}
+char lastChoiceWasFold(std::vector<Player> &playerList, const int &currentBetter, int &amt)
+{
+  char choice;
+  std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << ", will you call (c), raise (r), or fold (f)?" << std::endl;
+  if (playerList.at(currentBetter).getFirstBet() < amt)
+    std::cout << "bet required is: $" << amt << " ( + $" << amt - playerList.at(currentBetter).getFirstBet() << " needed to call) - ($" << playerList.at(currentBetter).getMoney() << " held)" << std::endl;
+  else
+    std::cout << "bet required is: $" << amt << " - ($" << playerList.at(currentBetter).getMoney() << " held)" << std::endl;
+  if (playerList.at(currentBetter).getMoney() == 0)
+  {
+    std::cout << "forced check" << std::endl;
+    choice = 'x';
+  }
+  else
+    std::cin >> choice;
+  if (choice == 'r')
+  {
+    while (playerList.at(currentBetter).getMoney() < amt && choice == 'r')
+    {
+      std::cout << "you dont have the funds required to raise, either call (c) or fold (f)" << std::endl;
+      std::cin >> choice;
+    }
+  }
+  return choice;
+}
+
+//helper functions which take care of making a bet, check, call, raise or fold
+void askForBets_bet(std::vector<Player> &playerList, const int &currentBetter, int &amt, int &pool)
+{
+  std::cout << "how much do you want do bet? ($)" << std::endl;
+  std::cin >> amt;
+  while (amt < 1)
+  {
+    std::cout << "must enter at least 1 dollar to bet" << std::endl;
+    std::cin >> amt;
+    while (amt > playerList.at(currentBetter).getMoney())
+    {
+      std::cout << "bet exceeds available funds, please specify an amount to bet equal to or lower than $" << playerList.at(currentBetter).getMoney() << std::endl;
+      std::cin >> amt;
+    }
+  }
+  while (amt > playerList.at(currentBetter).getMoney())
+  {
+    std::cout << "bet exceeds available funds, please specify an amount to bet equal to or lower than $" << playerList.at(currentBetter).getMoney() << std::endl;
+    std::cin >> amt;
+    while (amt < 1)
+    {
+      std::cout << "must enter at least 1 dollar to bet" << std::endl;
+      std::cin >> amt;
+    }
+  }
+  pool += amt;
+  playerList.at(currentBetter).withdraw(amt);
+  std::cout << "pool is currently at : $" << pool << std::endl
+            << std::endl;
+  setMarkersFalse(playerList, currentBetter);
+}
+void askForBets_check(std::vector<Player> &playerList, const int &currentBetter, const int &pool)
+{
+  std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has checked." << std::endl;
+  playerList.at(currentBetter).setMatchStatus(true);
+  std::cout << "pool is currently at : $" << pool << std::endl
+            << std::endl;
+}
+void askForBets_call(std::vector<Player> &playerList, const int &currentBetter, int &amt, int &pool)
+{
+  std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has called the bet of " << amt << std::endl;
+  if (playerList.at(currentBetter).getFirstBet() < amt)
+  {
+    if (playerList.at(currentBetter).getMoney() < (amt - playerList.at(currentBetter).getFirstBet()))
+    {
+      pool += playerList.at(currentBetter).getMoney();
+      playerList.at(currentBetter).withdraw(playerList.at(currentBetter).getMoney());
+    }
+    else
+    {
+      playerList.at(currentBetter).withdraw((amt - playerList.at(currentBetter).getFirstBet()));
+      pool += (amt - playerList.at(currentBetter).getFirstBet());
+    }
+  }
+  else
+  {
+    if (playerList.at(currentBetter).getMoney() < amt)
+    {
+      pool += playerList.at(currentBetter).getMoney();
+      playerList.at(currentBetter).withdraw(playerList.at(currentBetter).getMoney());
+    }
+    else
+    {
+      playerList.at(currentBetter).withdraw(amt);
+      pool += amt;
+    }
+  }
+  playerList.at(currentBetter).setFirstBet(amt);
+  playerList.at(currentBetter).setMatchStatus(true);
+  std::cout << "pool is currently at : $" << pool << std::endl
+            << std::endl;
+}
+void askForBets_raise(std::vector<Player> &playerList, const int &currentBetter, int &amt, int &pool)
+{
+  int raise;
+  std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has chosen to raise." << std::endl;
+  std::cout << "how much would you like to raise by? ($)" << std::endl;
+  std::cin >> raise;
+  while ((raise + amt) > playerList.at(currentBetter).getMoney())
+  {
+    std::cout << "raise exceeds available funds, please specify an amount to bet equal to or lower than $" << (playerList.at(currentBetter).getMoney() - amt) << std::endl;
+    std::cin >> raise;
+  }
+  amt += raise;
+  pool += amt;
+  playerList.at(currentBetter).setFirstBet(amt);
+  std::cout << "bet has been raised by $" << raise << ", bet is now $" << amt << std::endl;
+  playerList.at(currentBetter).withdraw(amt);
+  setMarkersFalse(playerList, currentBetter);
+  std::cout << "pool is currently at : $" << pool << std::endl
+            << std::endl;
+}
+void askForBets_fold(std::vector<Player> &playerList, const int &currentBetter, const int &pool)
+{
+  std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has folded :(" << std::endl;
+  playerList.at(currentBetter).setMatchStatus(true);
+  playerList.at(currentBetter).setFold(true);
+  std::cout << "pool is currently at : $" << pool << std::endl
+            << std::endl;
+}
+
+//these helper functions are for making the initial bet/check
+void askForBets_firstBet(std::vector<Player> &playerList, const int &currentBetter, int &amt, int &pool)
+{
+  std::cout << "how much do you want do bet? ($)" << std::endl;
+  std::cin >> amt;
+  while (amt < 1)
+  {
+    std::cout << "must enter at least 1 dollar to bet" << std::endl;
+    std::cin >> amt;
+    while (amt > playerList.at(currentBetter).getMoney())
+    {
+      std::cout << "bet exceeds available funds, please specify an amount to bet equal to or lower than $" << playerList.at(currentBetter).getMoney() << std::endl;
+      std::cin >> amt;
+    }
+  }
+  while (amt > playerList.at(currentBetter).getMoney())
+  {
+    std::cout << "bet exceeds available funds, please specify an amount to bet equal to or lower than $" << playerList.at(currentBetter).getMoney() << std::endl;
+    std::cin >> amt;
+    while (amt < 1)
+    {
+      std::cout << "must enter at least 1 dollar to bet" << std::endl;
+      std::cin >> amt;
+    }
+  }
+  pool += amt;
+  playerList.at(currentBetter).withdraw(amt);
+  std::cout << "pool is currently at : $" << pool << std::endl
+            << std::endl;
+  playerList.at(currentBetter).setMatchStatus(true);
+  playerList.at(currentBetter).setFirstBet(amt);
+}
+void askForBets_firstCheck(std::vector<Player> &playerList, const int &currentBetter, int &amt, const int &pool)
+{
+  std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has checked." << std::endl;
+  amt = 0;
+  playerList.at(currentBetter).setMatchStatus(true);
+  std::cout << "pool is currently at : $" << pool << std::endl
+            << std::endl;
+}
+
+//this helper function will setup the next better, will also end betting if all players matched last bet
+bool askForBets_setUpNextBetter(std::vector<Player> &playerList, int &currentBetter, char &lastChoice, const char &choice)
+{
+  lastChoice = choice;
+  currentBetter++;
+  currentBetter %= playerList.size();
+  while (playerList.at(currentBetter).getFold() == true)
+  { //this loop skips players who have folded
+    std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has folded :(" << std::endl;
+    currentBetter++;
+    currentBetter %= playerList.size();
+  }
+  bool bettingDone{true};
+  for (int i = 0; i < playerList.size(); i++)
+  {
+    if (playerList.at(i).getMatchStatus() == false)
+    {
+      if (playerList.at(i).getFold() == true)
+        playerList.at(i).setMatchStatus(true);
+      else
+        bettingDone = false;
+    }
+    if (bettingDone == false)
+      break;
+  }
+  return bettingDone;
+}
+
+void setFirstBetsToZero(std::vector<Player> &playerList)
+{
+  for (int i = 0; i < playerList.size(); i++)
+  {
+    playerList.at(i).setFirstBet(0);
+  }
+}
+
+//function which (through it's helper functions) keeps track of betting/calling/raising/checking/folding
 void askForBets(int &pool, std::vector<Player> &playerList, const int &instance, const int &round, const int &firstBetter)
 {
   setMarkersFalse(playerList, 99);
+  setFirstBetsToZero(playerList);
   std::cout << "round " << round << ", instance " << instance << " of betting: " << std::endl;
-  bool bettingDone = false; //needs to be original size
+  bool bettingDone = false;
   std::cout << "player#" << playerList.at(firstBetter).getPlayerNumber() << " is betting first" << std::endl;
   int currentBetter = firstBetter;
   std::cout << "(b) for bet, (x) for check" << std::endl;
   char lastChoice{NULL};
-  while (bettingDone == false)
-  { //holy shit i think this things works lol
-    //need implement hand ranking (currently just makes player 1 win)
+  while (bettingDone == false) //betting is done when all players have matched the last bet/raise/check
+  {
     char choice;
     int amt;
-    int raise;
     if (lastChoice)
-    {
+    { //if we are in this if it means a bet has been made already and amt has a value (0 if checked)
       switch (lastChoice)
       {
       case 'b':
-        std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << ", will you call (c), raise (r), or fold (f)?" << std::endl;
-        if (playerList.at(currentBetter).getFirstBet() < amt)
-          std::cout << "bet required is: $" << amt << " ( + $" << amt - playerList.at(currentBetter).getFirstBet() << " needed to call)" << std::endl;
-        else
-          std::cout << "bet required is: $" << amt << std::endl;
-        if (playerList.at(currentBetter).getMoney() == 0)
-        {
-          std::cout << "forced check" << std::endl;
-          choice = 'x';
-        }
-        else
-          std::cin >> choice;
-        if (choice == 'r')
-        {
-          while (playerList.at(currentBetter).getMoney() <= amt && choice == 'r')
-          {
-            std::cout << "you dont have the funds required to raise, either call (c) or fold (f)" << std::endl;
-            std::cin >> choice;
-          }
-        }
+        choice = lastChoiceWasBet(playerList, currentBetter, amt);
         break;
       case 'x':
-        std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << ", will you bet (b), or check (x)?" << std::endl;
-        if (playerList.at(currentBetter).getFirstBet() < amt)
-          std::cout << "bet required is: $" << amt << " ( + $" << amt - playerList.at(currentBetter).getFirstBet() << " needed to call)" << std::endl;
-        else
-          std::cout << "bet required is: $" << amt << std::endl;
-        if (playerList.at(currentBetter).getMoney() == 0)
-        {
-          std::cout << "forced check" << std::endl;
-          choice = 'x';
-        }
-        else
-          std::cin >> choice;
+        choice = lastChoiceWasCheck(playerList, currentBetter, amt);
         break;
       case 'c':
-        std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << ", will you call (c), raise (r), or fold (f)?" << std::endl;
-        if (playerList.at(currentBetter).getFirstBet() < amt)
-          std::cout << "bet required is: $" << amt << " ( + $" << amt - playerList.at(currentBetter).getFirstBet() << " needed to call)" << std::endl;
-        else
-          std::cout << "bet required is: $" << amt << std::endl;
-        if (playerList.at(currentBetter).getMoney() == 0)
-        {
-          std::cout << "forced check" << std::endl;
-          choice = 'x';
-        }
-        else
-          std::cin >> choice;
-        if (choice == 'r')
-        {
-          while (playerList.at(currentBetter).getMoney() < amt && choice == 'r')
-          {
-            std::cout << "you dont have the funds required to raise, either call (c) or fold (f)" << std::endl;
-            std::cin >> choice;
-          }
-        }
+        choice = lastChoiceWasCall(playerList, currentBetter, amt);
         break;
       case 'r':
-        std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << ", will you call (c), raise (r), or fold (f)?" << std::endl;
-        if (playerList.at(currentBetter).getFirstBet() < amt)
-          std::cout << "bet required is: $" << amt << " ( + $" << amt - playerList.at(currentBetter).getFirstBet() << " needed to call)" << std::endl;
-        else
-          std::cout << "bet required is: $" << amt << std::endl;
-        if (playerList.at(currentBetter).getMoney() == 0)
-        {
-          std::cout << "forced check" << std::endl;
-          choice = 'x';
-        }
-        else
-          std::cin >> choice;
-        if (choice == 'r')
-        {
-          while (playerList.at(currentBetter).getMoney() < amt && choice == 'r')
-          {
-            std::cout << "you dont have the funds required to raise, either call (c) or fold (f)" << std::endl;
-            std::cin >> choice;
-          }
-        }
+        choice = lastChoiceWasRaise(playerList, currentBetter, amt);
         break;
       case 'f':
-        std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << ", will you call (c), raise (r), or fold (f)?" << std::endl;
-        if (playerList.at(currentBetter).getFirstBet() < amt)
-          std::cout << "bet required is: $" << amt << " ( + $" << amt - playerList.at(currentBetter).getFirstBet() << " needed to call)" << std::endl;
-        else
-          std::cout << "bet required is: $" << amt << std::endl;
-        if (playerList.at(currentBetter).getMoney() == 0)
-        {
-          std::cout << "forced check" << std::endl;
-          choice = 'x';
-        }
-        else
-          std::cin >> choice;
-        if (choice == 'r')
-        {
-          while (playerList.at(currentBetter).getMoney() < amt && choice == 'r')
-          {
-            std::cout << "you dont have the funds required to raise, either call (c) or fold (f)" << std::endl;
-            std::cin >> choice;
-          }
-        }
+        choice = lastChoiceWasFold(playerList, currentBetter, amt);
         break;
       }
       switch (choice)
       {
       case 'b':
-        std::cout << "how much do you want do bet? ($)" << std::endl;
-        std::cin >> amt;
-        while (amt < 1)
-        {
-          std::cout << "must enter at least 1 dollar to bet" << std::endl;
-          std::cin >> amt;
-          while (amt > playerList.at(currentBetter).getMoney())
-          {
-            std::cout << "bet exceeds available funds, please specify an amount to bet equal to or lower than $" << playerList.at(currentBetter).getMoney() << std::endl;
-            std::cin >> amt;
-          }
-        }
-        while (amt > playerList.at(currentBetter).getMoney())
-        {
-          std::cout << "bet exceeds available funds, please specify an amount to bet equal to or lower than $" << playerList.at(currentBetter).getMoney() << std::endl;
-          std::cin >> amt;
-          while (amt < 1)
-          {
-            std::cout << "must enter at least 1 dollar to bet" << std::endl;
-            std::cin >> amt;
-          }
-        }
-        pool += amt;
-        playerList.at(currentBetter).withdraw(amt);
-        std::cout << "pool is currently at : $" << pool << std::endl;
-        setMarkersFalse(playerList, currentBetter);
+        askForBets_bet(playerList, currentBetter, amt, pool);
         break;
       case 'x':
-        std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has checked." << std::endl;
-        playerList.at(currentBetter).setMatchStatus(true);
-        std::cout << "pool is currently at : $" << pool << std::endl;
+        askForBets_check(playerList, currentBetter, pool);
         break;
       case 'c':
-        std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has called the bet of " << amt << std::endl;
-        if (playerList.at(currentBetter).getFirstBet() < amt)
-        {
-          if (playerList.at(currentBetter).getMoney() < (amt - playerList.at(currentBetter).getFirstBet()))
-          {
-            pool += playerList.at(currentBetter).getMoney();
-            playerList.at(currentBetter).withdraw(playerList.at(currentBetter).getMoney());
-          }
-          else
-          {
-            playerList.at(currentBetter).withdraw((amt - playerList.at(currentBetter).getFirstBet()));
-            pool += (amt - playerList.at(currentBetter).getFirstBet());
-          }
-        }
-        else
-        {
-          if (playerList.at(currentBetter).getMoney() < amt)
-          {
-            pool += playerList.at(currentBetter).getMoney();
-            playerList.at(currentBetter).withdraw(playerList.at(currentBetter).getMoney());
-          }
-          else
-          {
-            playerList.at(currentBetter).withdraw(amt);
-            pool += amt;
-          }
-        }
-        playerList.at(currentBetter).setFirstBet(amt);
-        playerList.at(currentBetter).setMatchStatus(true);
-        std::cout << "pool is currently at : $" << pool << std::endl;
+        askForBets_call(playerList, currentBetter, amt, pool);
         break;
       case 'r':
-        std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has chosen to raise." << std::endl;
-        std::cout << "how much would you like to raise by? ($)" << std::endl;
-        std::cin >> raise;
-        while ((raise + amt) > playerList.at(currentBetter).getMoney())
-        {
-          std::cout << "raise exceeds available funds, please specify an amount to bet equal to or lower than $" << (playerList.at(currentBetter).getMoney() - amt) << std::endl;
-          std::cin >> raise;
-        }
-        amt += raise;
-        pool += amt;
-        playerList.at(currentBetter).setFirstBet(amt);
-        std::cout << "bet has been raised by $" << raise << ", bet is now $" << amt << std::endl;
-        playerList.at(currentBetter).withdraw(amt);
-        setMarkersFalse(playerList, currentBetter);
-        std::cout << "pool is currently at : $" << pool << std::endl;
+        askForBets_raise(playerList, currentBetter, amt, pool);
         break;
       case 'f':
-        std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has folded :(" << std::endl;
-        playerList.at(currentBetter).setMatchStatus(true);
-        playerList.at(currentBetter).setFold(true);
+        askForBets_fold(playerList, currentBetter, pool);
         break;
       }
     }
     else
-    {
+    { //if we are in this else it means we are making the first bet of the instance
       if (playerList.at(currentBetter).getMoney() == 0)
       {
         std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has checked. (no funds to bet with)" << std::endl;
@@ -381,64 +518,14 @@ void askForBets(int &pool, std::vector<Player> &playerList, const int &instance,
       switch (choice)
       {
       case 'b':
-        std::cout << "how much do you want do bet? ($)" << std::endl;
-        std::cin >> amt;
-        while (amt < 1)
-        {
-          std::cout << "must enter at least 1 dollar to bet" << std::endl;
-          std::cin >> amt;
-          while (amt > playerList.at(currentBetter).getMoney())
-          {
-            std::cout << "bet exceeds available funds, please specify an amount to bet equal to or lower than $" << playerList.at(currentBetter).getMoney() << std::endl;
-            std::cin >> amt;
-          }
-        }
-        while (amt > playerList.at(currentBetter).getMoney())
-        {
-          std::cout << "bet exceeds available funds, please specify an amount to bet equal to or lower than $" << playerList.at(currentBetter).getMoney() << std::endl;
-          std::cin >> amt;
-          while (amt < 1)
-          {
-            std::cout << "must enter at least 1 dollar to bet" << std::endl;
-            std::cin >> amt;
-          }
-        }
-        pool += amt;
-        playerList.at(currentBetter).withdraw(amt);
-        std::cout << "pool is currently at : $" << pool << std::endl;
-        playerList.at(currentBetter).setMatchStatus(true);
-        playerList.at(currentBetter).setFirstBet(amt);
+        askForBets_firstBet(playerList, currentBetter, amt, pool);
         break;
       case 'x':
-        std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has checked." << std::endl;
-        amt = 0;
-        playerList.at(currentBetter).setMatchStatus(true);
-        std::cout << "pool is currently at : $" << pool << std::endl;
+        askForBets_firstCheck(playerList, currentBetter, amt, pool);
         break;
       }
     }
-    lastChoice = choice;
-    currentBetter++;
-    currentBetter %= playerList.size();
-    while (playerList.at(currentBetter).getFold() == true)
-    {
-      std::cout << "player# " << playerList.at(currentBetter).getPlayerNumber() << " has folded :(" << std::endl;
-      currentBetter++;
-      currentBetter %= playerList.size();
-    }
-    bettingDone = true;
-    for (int i = 0; i < playerList.size(); i++)
-    {
-      if (playerList.at(i).getMatchStatus() == false)
-      {
-        if (playerList.at(i).getFold() == true)
-          playerList.at(i).setMatchStatus(true);
-        else
-          bettingDone = false;
-      }
-      if (bettingDone == false)
-        break;
-    }
+    bettingDone = askForBets_setUpNextBetter(playerList, currentBetter, lastChoice, choice);
     if (bettingDone)
     {
       if (amt == 0)

@@ -47,43 +47,43 @@ Card::Card(Suit suit, int intValue)
   switch (intValue)
   {
   case 1:
-    this->nameValue = "Ace";
-    break;
-  case 2:
     this->nameValue = "Two";
     break;
-  case 3:
+  case 2:
     this->nameValue = "Three";
     break;
-  case 4:
+  case 3:
     this->nameValue = "Four";
     break;
-  case 5:
+  case 4:
     this->nameValue = "Five";
     break;
-  case 6:
+  case 5:
     this->nameValue = "Six";
     break;
-  case 7:
+  case 6:
     this->nameValue = "Seven";
     break;
-  case 8:
+  case 7:
     this->nameValue = "Eight";
     break;
-  case 9:
+  case 8:
     this->nameValue = "Nine";
     break;
-  case 10:
+  case 9:
     this->nameValue = "Ten";
     break;
-  case 11:
+  case 10:
     this->nameValue = "Jack";
     break;
-  case 12:
+  case 11:
     this->nameValue = "Queen";
     break;
-  case 13:
+  case 12:
     this->nameValue = "King";
+    break;
+  case 13:
+    this->nameValue = "Ace";
     break;
   }
 }
