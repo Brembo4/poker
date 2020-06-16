@@ -4,6 +4,7 @@
 #include <ctime>
 #include "Classes.h"
 
+//function which empties deck, then fills with std 52 card deck
 void fillDeck(std::vector<Card> &deck)
 {
   while (deck.size() > 1)
@@ -21,6 +22,7 @@ void fillDeck(std::vector<Card> &deck)
   }
 }
 
+//display each card in deck line by line
 void displayDeck(std::vector<Card> deck)
 {
   std::cout << std::endl
@@ -31,6 +33,7 @@ void displayDeck(std::vector<Card> deck)
   }
 }
 
+//shuffle order of cards in deck
 void shuffleDeck(std::vector<Card> &deck)
 {
   for (int i = 0; i < deck.size() - 1; i++)
@@ -42,6 +45,7 @@ void shuffleDeck(std::vector<Card> &deck)
   }
 }
 
+//ask user for number of players in game
 void promptPlayerCount(int &playerCount)
 {
   std::cout << "how many players? minimum 2 maximum 6" << std::endl;
@@ -72,6 +76,7 @@ void promptPlayerCount(int &playerCount)
   }
 }
 
+//deal cards to players in game (2 each)
 void dealCards(std::vector<Player> &playerList, std::vector<Card> &deck)
 {
   std::cout << "dealing cards to " << playerList.size() << " players" << std::endl;
@@ -85,6 +90,7 @@ void dealCards(std::vector<Player> &playerList, std::vector<Card> &deck)
   }
 }
 
+//depending on instance, lays 3 cards, then 1, then 1, displays content each time
 void layRiver(std::vector<Card> &deck, const int &instance)
 {
   static std::vector<Card> river;
@@ -129,6 +135,7 @@ void layRiver(std::vector<Card> &deck, const int &instance)
             << std::endl;
 }
 
+//shows cards in players hands in console
 void showPlayerCards(std::vector<Player> &playerList)
 {
   for (int i = 0; i < playerList.size(); i++)
@@ -137,6 +144,7 @@ void showPlayerCards(std::vector<Player> &playerList)
   }
 }
 
+//markers indicate wether a player has matched the bet required
 void setMarkersFalse(std::vector<Player> &playerList, const int &currentBetter)
 {
   for (int i = 0; i < playerList.size(); i++)
@@ -147,6 +155,7 @@ void setMarkersFalse(std::vector<Player> &playerList, const int &currentBetter)
     playerList.at(currentBetter).setMatchStatus(true);
 }
 
+//break it up
 void askForBets(int &pool, std::vector<Player> &playerList, const int &instance, const int &round, const int &firstBetter)
 {
   setMarkersFalse(playerList, 99);
@@ -181,7 +190,7 @@ void askForBets(int &pool, std::vector<Player> &playerList, const int &instance,
           std::cin >> choice;
         if (choice == 'r')
         {
-          while (playerList.at(currentBetter).getMoney() < amt && choice == 'r')
+          while (playerList.at(currentBetter).getMoney() <= amt && choice == 'r')
           {
             std::cout << "you dont have the funds required to raise, either call (c) or fold (f)" << std::endl;
             std::cin >> choice;
@@ -440,6 +449,7 @@ void askForBets(int &pool, std::vector<Player> &playerList, const int &instance,
   }
 }
 
+//function transfers pool to a player's funds
 void alocateWinnings(int &pool, std::vector<Player> &playerList)
 {
   //determineWinner();
@@ -448,6 +458,7 @@ void alocateWinnings(int &pool, std::vector<Player> &playerList)
   pool = 0;
 }
 
+//removes players who no longer have funds to play with
 void eliminateLosers(std::vector<Player> &playerList)
 {
   std::vector<Player> notLosers;
@@ -461,6 +472,7 @@ void eliminateLosers(std::vector<Player> &playerList)
   playerList.swap(notLosers);
 }
 
+//removes cards from players hands
 void emptyPlayerHands(std::vector<Player> &playerList)
 {
   for (int i = 0; i < playerList.size(); i++)
@@ -469,6 +481,7 @@ void emptyPlayerHands(std::vector<Player> &playerList)
   }
 }
 
+//playing the game until only 1 player remains
 void playGame(const int &playerCount, std::vector<Card> &deck)
 {
   int money;
@@ -510,6 +523,7 @@ void playGame(const int &playerCount, std::vector<Card> &deck)
   std::cout << "game over, winner is player# " << playerList.at(0).getPlayerNumber() << std::endl;
 }
 
+//start game (init)
 void startGame()
 {
   int playerCount{0};
@@ -519,6 +533,7 @@ void startGame()
   playGame(playerCount, deck);
 }
 
+//basically just calls start game
 int main()
 {
   srand(time(0));
