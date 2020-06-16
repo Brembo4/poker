@@ -301,6 +301,7 @@ void askForBets_bet(std::vector<Player> &playerList, const int &currentBetter, i
   }
   pool += amt;
   playerList.at(currentBetter).withdraw(amt);
+  playerList.at(currentBetter).setFirstBet(amt);
   std::cout << "pool is currently at : $" << pool << std::endl
             << std::endl;
   setMarkersFalse(playerList, currentBetter);
